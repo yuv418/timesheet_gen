@@ -54,7 +54,7 @@ pub struct TimesheetPositionalData {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Timesheet {
+pub struct TimesheetInfo {
     pub pos_data: Vec<TimesheetPositionalData>,
     pub entries: Vec<HashMap<String, Value>>,
 
