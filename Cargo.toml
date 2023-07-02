@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 poppler-rs = "0.21"
-cairo-rs = { version = "0.17", features = ["png"] } # might have to change this to 0.15
+cairo-rs = { version = "0.17", features = ["png", "pdf"] } # might have to change this to 0.15
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

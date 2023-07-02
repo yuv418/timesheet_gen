@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs::File, path::PathBuf};
 
-use cairo::{Context, ImageSurface};
+use cairo::{Context, ImageSurface, PdfSurface, Surface};
 use poppler::Document;
 use strfmt::Format;
 
@@ -8,7 +8,28 @@ use crate::timesheet_info::{TimesheetData, TimesheetInfo, TimesheetPositionalDat
 
 const DATE_FORMAT: &str = "%m/%d/%Y";
 
-pub fn generate_timesheet(filename: PathBuf, ts_info: TimesheetInfo) -> Result<(), Box<dyn std::error::Error>> {
+pub enum TimesheetOutputFormat {
+    Pdf(PathBuf),
+    Png(PathBuf),
+}
+
+enum TimesheetSurface {
+    Pdf(PdfSurface),
+    Png(PathBuf, ImageSurface),
+}
+
+impl TimesheetSurface {
+    pub fn surface(&self) -> &Surface {
+        match self {
+            TimesheetSurface::Pdf(s) => s,
+            TimesheetSurface::Png(_, s) => s,
+        }
+    }
+}
+
+pub fn generate_timesheet(
+    filename: PathBuf, ts_info: TimesheetInfo, output_fmt: TimesheetOutputFormat,
+) -> Result<(), Box<dyn std::error::Error>> {
     let filename_str = match filename.to_str() {
         Some(s) => s,
         None => return Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, "Filename could not be converted to string"))),
@@ -23,8 +44,13 @@ pub fn generate_timesheet(filename: PathBuf, ts_info: TimesheetInfo) -> Result<(
             let (w, h) = first_page.size();
             println!("Width {} height {}", w, h);
 
-            let surface = ImageSurface::create(cairo::Format::ARgb32, w as i32, h as i32)?;
+            let ts_surface: TimesheetSurface = match output_fmt {
+                TimesheetOutputFormat::Pdf(out_path) => TimesheetSurface::Pdf(PdfSurface::new(w, h, out_path)?),
+                TimesheetOutputFormat::Png(out_path) =>
+                    TimesheetSurface::Png(out_path, ImageSurface::create(cairo::Format::ARgb32, w as i32, h as i32)?),
+            };
 
+            let surface = ts_surface.surface();
             let context = Context::new(&surface)?;
 
             first_page.render(&context);
@@ -46,8 +72,12 @@ pub fn generate_timesheet(filename: PathBuf, ts_info: TimesheetInfo) -> Result<(
             println!("Finished drawing information onto pdf");
 
             // PNG currently for debugging purposes
-            let mut output_f = File::create("output.png")?;
-            Ok(surface.write_to_png(&mut output_f)?)
+            if let TimesheetSurface::Png(file_name, sf) = ts_surface {
+                let mut output_f = File::create(file_name)?;
+                Ok(sf.write_to_png(&mut output_f)?)
+            } else {
+                Ok(())
+            }
         }
         None => Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, "Timesheet does not have at least one page"))),
     }

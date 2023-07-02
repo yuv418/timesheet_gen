@@ -12,7 +12,7 @@ mod timesheet_generator;
 mod timesheet_info;
 
 use crate::{
-    timesheet_generator::generate_timesheet,
+    timesheet_generator::{generate_timesheet, TimesheetOutputFormat},
     timesheet_info::{TimesheetData, TimesheetInfo},
 };
 
@@ -39,7 +39,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     println!("Timesheet path is {}", timesheet_abspath);
 
                     // Try to get the page from Poppler and convert it into an image
-                    generate_timesheet(PathBuf::from(timesheet_abspath), ts_info)
+                    generate_timesheet(PathBuf::from(timesheet_abspath), ts_info, TimesheetOutputFormat::Pdf("output.pdf".into()))
                 }
                 None => Err(Box::new(std::io::Error::new(std::io::ErrorKind::InvalidInput, "Could not convert timesheet path to string"))),
             }
