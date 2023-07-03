@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "tsg_web_ui"
+version = "0.1.0"
+description = ""
+authors = ["yuv418 <me@ramesh.tv>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+flask = "^2.3.2"
+pandas = "^2.0.3"
+
+[build-system]
+requires = ["maturin>=1.1,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "tsg_web_ui"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]

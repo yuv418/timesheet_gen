@@ -8,10 +8,7 @@ use std::{
 };
 use strfmt::{strfmt, Format};
 
-mod timesheet_generator;
-mod timesheet_info;
-
-use crate::{
+use timesheet_gen::{
     timesheet_generator::{generate_timesheet, TimesheetOutputFormat},
     timesheet_info::{TimesheetData, TimesheetInfo},
 };

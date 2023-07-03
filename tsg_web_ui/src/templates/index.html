@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <h1>Timesheet Generator</h1>
+    {% with msgs = get_flashed_messages() %}
+       {% if msgs %}
+         <ul>
+             {% for msg in msgs %}
+             <li>{{ msg }}</li>
+             {% endfor %}
+         </ul>
+       {% endif %}
+    {% endwith %}
+    <form method="POST" action="/gen_ts" enctype="multipart/form-data">
+        <label for="name">Name:</label>
+        <input name="name"> <br>
+
+        <label for="address">Address:</label>
+        <input name="address"> <br>
+
+        <label for="csv" CSV>CSV (skips the FIRST row):</label>
+        <input type="file" name="csv"> <br>
+
+        <input type="submit">
+    </form>
+</body>
+</html>
