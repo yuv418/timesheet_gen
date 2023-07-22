@@ -8,6 +8,7 @@ authors = ["yuv418 <me@ramesh.tv>"]
 python = ">=3.8"
 flask = "^2.3.2"
 pandas = "^2.0.3"
+gunicorn = "^21.2.0"
 
 [build-system]
 requires = ["maturin>=1.1,<2.0"]
