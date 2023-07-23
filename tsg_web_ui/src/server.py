@@ -11,9 +11,12 @@ import copy
 from flask import Flask, render_template, request, url_for, flash, redirect, send_file
 
 TEMPLATES_AUTO_RELOAD = True
+INFO_JSON_PATH = os.path.abspath(os.environ.get("TSG_INFO_JSON") or 'info.json')
+TIMESHEET_PDF_PATH = os.path.abspath(os.environ.get("TSG_TIMESHEET_PDF") or 'timesheet.pdf')
+
 
 info = None
-with open(os.path.abspath('info.json')) as inf_f:
+with open(INFO_JSON_PATH) as inf_f:
     info = json.load(inf_f)
 
 app = Flask(__name__)
@@ -46,7 +49,7 @@ def gen_ts():
     info_d['entries'] = entries
 
     outfile_path = os.path.join(tempfile.mkdtemp(), 'output.pdf')
-    tsg_web_ui.gen_ts(os.path.abspath("timesheet.pdf"), json.dumps(info_d), "pdf", outfile_path)
+    tsg_web_ui.gen_ts(TIMESHEET_PDF_PATH, json.dumps(info_d), "pdf", outfile_path)
 
     # TODO delete old pdfs
     # print(request.values.get('values'))
