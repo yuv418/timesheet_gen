@@ -52,6 +52,9 @@ def gen_ts():
 
     if show_description:
         info_d['entry_format']['service'] += "- {description}"
+        for i in range(0, len(info_d['pos_data'])):
+            if info_d['pos_data'][i]['data_name']  == 'description':
+                del info_d['pos_data'][i]
 
     outfile_path = os.path.join(tempfile.mkdtemp(), 'output.pdf')
     tsg_web_ui.gen_ts(TIMESHEET_PDF_PATH, json.dumps(info_d), "pdf", outfile_path)
