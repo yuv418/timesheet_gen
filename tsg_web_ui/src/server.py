@@ -51,7 +51,7 @@ def gen_ts():
     info_d['entries'] = entries
 
     if show_description:
-        info_d['entry_format']['service'] += "- {description}"
+        info_d['entry_format']['service'] += " - {description}"
         for i in range(0, len(info_d['pos_data'])):
             if info_d['pos_data'][i]['data_name']  == 'description':
                 del info_d['pos_data'][i]
