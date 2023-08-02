@@ -39,6 +39,8 @@ def gen_ts():
     name = request.values.get('name')
     address = request.values.get('address')
 
+    show_description = True if request.values.get('description') == 'true' else False
+
     info_d = copy.deepcopy(info)
     for i in range(0, len(info_d['pos_data'])):
         dn = info_d['pos_data'][i]['data_name']
@@ -47,6 +49,12 @@ def gen_ts():
         elif dn == 'address':
             info_d['pos_data'][i]['data_value']['value'] = address
     info_d['entries'] = entries
+
+    if show_description:
+        info_d['entry_format']['service'] += " - {description}"
+        for i in range(0, len(info_d['pos_data'])):
+            if info_d['pos_data'][i]['data_name']  == 'description':
+                del info_d['pos_data'][i]
 
     outfile_path = os.path.join(tempfile.mkdtemp(), 'output.pdf')
     tsg_web_ui.gen_ts(TIMESHEET_PDF_PATH, json.dumps(info_d), "pdf", outfile_path)

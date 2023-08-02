@@ -83,6 +83,18 @@ pub fn generate_timesheet(
     }
 }
 
+fn round_amnt(amnt: f64) -> f64 {
+    let amnt_offset = (amnt * 1000.0).round();
+    let third_decimal = amnt_offset as u32 % 10;
+    if third_decimal >= 5 {
+        // Round up
+        amnt_offset / 1000.0 + ((10 - third_decimal) as f64 / 1000.0)
+    } else {
+        // Round up
+        amnt_offset / 1000.0 - (third_decimal as f64 / 1000.0)
+    }
+}
+
 fn draw_entries(context: &Context, ts_info: &TimesheetInfo) -> Result<(), Box<dyn std::error::Error>> {
     // 1: Calculate size of text line
     let entry_font_size = {
@@ -132,15 +144,18 @@ fn draw_entries(context: &Context, ts_info: &TimesheetInfo) -> Result<(), Box<dy
             if k == "total" {
                 let hours = entry.get("hours").expect("Expected rate field").as_f64().expect("Invalid hours format");
                 let rate = entry.get("rate").expect("Expected rate field").as_f64().expect("Invalid rate format");
-                let amnt = hours * rate;
+                let amnt = round_amnt(hours * rate);
+                // println!("amnt is {amnt}");
 
                 let mut map = HashMap::new();
+
                 map.insert("total".to_string(), amnt);
 
                 text = v.format(&map)?;
 
                 total_hours += hours;
-                total_amnt += amnt;
+                total_amnt = round_amnt(total_amnt + amnt);
+                // println!("total_amnt is {total_amnt}");
 
                 // Lazy way to do this
                 total_map.insert("hours".to_string(), total_hours);
